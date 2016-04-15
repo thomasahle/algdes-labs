@@ -11,17 +11,20 @@ for word in open(sys.argv[1]):
 for line in sys.stdin:
     w1, w2 = line.split()
     # Do BFS
-    dist = collections.defaultdict(lambda: 10**6)
+    par = {}
     queue = collections.deque([w1])
-    dist[w1] = 0
     while queue:
         w = queue.popleft()
         snip = ''.join(sorted(w[1:]))
         for w3 in snip2words[snip]:
-            if dist[w3] > dist[w]+1:
-                dist[w3] = dist[w]+1
+            if w3 not in par and w3 != w1:
+                par[w3] = w
                 queue.append(w3)
-    if dist[w2] == 10**6:
-        print(-1)
-    else: print(dist[w2])
+    # Recover path
+    path = [w2]
+    while path[-1] in par:
+        path.append(par[path[-1]])
+    if len(path) == 1 and w1 != w2:
+        path = [':-(']
+    print(' -> '.join(path[::-1]))
 
